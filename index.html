@@ -4,10 +4,21 @@
     <meta charset="UTF-8">
     <title>Drag and Drop</title>
     <style>
+        body {
+            display: flex;
+            justify-content: center;
+            margin: 50px auto;
+            gap: 30px;
+            background-color: gainsboro;
+        }
         .container {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
+            display: flex;
+            flex-direction: column;
             gap: 10px;
+            width: 400px;
+            padding: 30px;
+            border-radius: 10px;
+            background-color: white;
         }
         .box {
             border: 3px solid #666;
@@ -25,6 +36,11 @@
 <div class="container">
     <div draggable="true" class="box">A</div>
     <div draggable="true" class="box">B</div>
+    <div draggable="true" class="box">C</div>
+    <div draggable="true" class="box">D</div>
+    <div draggable="true" class="box">E</div>
+</div>
+<div class="container">
     <div draggable="true" class="box">C</div>
     <div draggable="true" class="box">D</div>
     <div draggable="true" class="box">E</div>
