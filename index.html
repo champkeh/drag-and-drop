@@ -10,20 +10,20 @@
             align-items: flex-start;
             margin: 50px auto;
             gap: 30px;
-            background-color: gainsboro;
+            background-color: #f1f1f1;
         }
         .container {
             display: flex;
             flex-direction: column;
             gap: 10px;
             width: 300px;
-            padding: 30px;
+            padding: 0 30px 30px;
             border-radius: 10px;
             background-color: white;
             transition: all .5s;
         }
         .container.droppable {
-            box-shadow: 0 0 10px 0 #333;
+            box-shadow: 0 0 20px 0 rgba(207, 207, 207, 1);
         }
         .container.droppable .placeholder {
             display: block;
@@ -32,32 +32,39 @@
             display: none;
         }
         .droppable.active .placeholder {
-            border: 3px solid #69c7ff;
             opacity: 1;
+            border: 1px solid #bcc4e2;
+            background-color: #eceff8;
         }
         .placeholder {
-            border: 3px dashed #666666;
+            border: 1px solid #cfcfcf;
             background-color: #ddd;
             border-radius: .5em;
             opacity: 0.4;
             min-height: 44px;
             box-sizing: border-box;
-            transition: border .2s;
+            transition: all .2s;
         }
 
         .box {
-            border: 3px solid #666;
-            background-color: #ddd;
-            border-radius: .5em;
+            border: 1px solid #e9e9e9;
+            border-radius: 5px;
             padding: 10px;
             cursor: move;
             min-height: 44px;
             box-sizing: border-box;
         }
+        .box:hover {
+            border-color: #cfcfcf;
+        }
+        .box:active {
+            box-shadow: 0 0 10px 0 #cfcfcf;
+        }
     </style>
 </head>
 <body>
 <div class="container" id="containerA">
+    <h3>水果</h3>
     <div draggable="true" class="box">苹果</div>
     <div draggable="true" class="box">西红柿</div>
     <div draggable="true" class="box">柑橘</div>
@@ -66,6 +73,7 @@
     <div class="placeholder"></div>
 </div>
 <div class="container" id="containerB">
+    <h3>蔬菜</h3>
     <div draggable="true" class="box">萝卜</div>
     <div draggable="true" class="box">香蕉</div>
     <div draggable="true" class="box">菠萝</div>
