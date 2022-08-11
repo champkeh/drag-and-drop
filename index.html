@@ -15,17 +15,42 @@
             display: flex;
             flex-direction: column;
             gap: 10px;
-            width: 400px;
+            width: 300px;
             padding: 30px;
             border-radius: 10px;
             background-color: white;
+            transition: all .5s;
         }
+        .container.droppable {
+            box-shadow: 0 0 10px 0 #333;
+        }
+        .container.droppable .placeholder {
+            display: block;
+        }
+        .container .placeholder {
+            display: none;
+        }
+        .droppable.active .placeholder {
+            border: 3px solid #69c7ff;
+            opacity: 1;
+        }
+        .placeholder {
+            border: 3px dashed #666666;
+            background-color: #ddd;
+            border-radius: .5em;
+            opacity: 0.4;
+            min-height: 44px;
+            box-sizing: border-box;
+        }
+
         .box {
             border: 3px solid #666;
             background-color: #ddd;
             border-radius: .5em;
             padding: 10px;
             cursor: move;
+            min-height: 44px;
+            box-sizing: border-box;
         }
         .box.over {
             border: 3px dashed #666666;
@@ -33,44 +58,47 @@
     </style>
 </head>
 <body>
-<div class="container">
+<div class="container" id="containerA">
     <div draggable="true" class="box">A</div>
     <div draggable="true" class="box">B</div>
     <div draggable="true" class="box">C</div>
     <div draggable="true" class="box">D</div>
     <div draggable="true" class="box">E</div>
 </div>
-<div class="container">
+<div class="container" id="containerB">
     <div draggable="true" class="box">C</div>
     <div draggable="true" class="box">D</div>
     <div draggable="true" class="box">E</div>
+    <div class="placeholder"></div>
 </div>
 <script>
     let dragSrcEl
-    function handleDragStart(e) {
+    function handleDragStart(event) {
         this.style.opacity = '0.4'
 
         dragSrcEl = this
 
-        e.dataTransfer.effectAllowed = 'move'
-        e.dataTransfer.setData('text/html', this.innerHTML)
+        event.dataTransfer.effectAllowed = 'move'
+        event.dataTransfer.setData('text/plain', this.innerHTML)
     }
     function handleDragEnd(e) {
         this.style.opacity = '1'
 
-        items.forEach(item => {
-            item.classList.remove('over')
-        })
+        // items.forEach(item => {
+        //     item.classList.remove('over')
+        // })
+        containerB.classList.remove('active')
+        containerB.classList.remove('droppable')
     }
     function handleDragOver(e) {
         e.preventDefault()
         return false
     }
     function handleDragEnter(e) {
-        this.classList.add('over')
+        // this.classList.add('over')
     }
     function handleDragLeave(e) {
-        this.classList.remove('over')
+        // this.classList.remove('over')
     }
     function handleDrop(e) {
         e.stopPropagation()
@@ -83,14 +111,51 @@
         return false
     }
 
-    let items = document.querySelectorAll('.container .box')
+    const containerA = document.querySelector('#containerA')
+    const containerB = document.querySelector('#containerB')
+
+    let items = document.querySelectorAll('[draggable="true"]')
     items.forEach(item => {
         item.addEventListener('dragstart', handleDragStart)
-        item.addEventListener('dragover', handleDragOver)
-        item.addEventListener('dragenter', handleDragEnter)
-        item.addEventListener('dragleave', handleDragLeave)
+        // item.addEventListener('dragover', handleDragOver)
+        // item.addEventListener('dragenter', handleDragEnter)
+        // item.addEventListener('dragleave', handleDragLeave)
         item.addEventListener('dragend', handleDragEnd)
-        item.addEventListener('drop', handleDrop)
+        // item.addEventListener('drop', handleDrop)
+    })
+    containerA.addEventListener('dragstart', (event) => {
+        containerA.classList.add('active')
+        containerA.classList.add('droppable')
+        containerB.classList.add('droppable')
+    })
+    containerA.addEventListener('dragend', (event) => {
+        event.stopPropagation()
+        document.querySelector('#containerB').classList.remove('droppable')
+    })
+
+    containerB.addEventListener('dragenter', (event) => {
+        containerB.classList.add('active')
+    })
+    containerB.addEventListener('dragleave', (event) => {
+        event.target.classList.remove('active')
+    })
+    containerB.addEventListener('dragover', (event) => {
+        event.preventDefault()
+    })
+    containerB.addEventListener('drop', (event) => {
+        event.preventDefault()
+
+        // const innerHTML = event.dataTransfer.getData('text/plain')
+        // console.log(innerHTML)
+        // const div = document.createElement('div')
+        // div.classList.add('box')
+        // div.draggable = true
+        // div.innerHTML = innerHTML
+        containerB.appendChild(dragSrcEl)
+        const placeholder = containerB.querySelector('.placeholder')
+        containerB.insertBefore(dragSrcEl, placeholder)
+
+        return false
     })
 </script>
 </body>
