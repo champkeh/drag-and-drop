@@ -100,10 +100,6 @@
     items.forEach(item => {
         item.addEventListener('dragstart', handleDragStart)
         item.addEventListener('dragend', handleDragEnd)
-        // item.addEventListener('dragover', handleDragOver)
-        // item.addEventListener('dragenter', handleDragEnter)
-        // item.addEventListener('dragleave', handleDragLeave)
-        // item.addEventListener('drop', handleDrop)
     })
     containerA.addEventListener('dragstart', (event) => {
         containerB.classList.add('droppable')
