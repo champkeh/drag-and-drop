@@ -150,9 +150,11 @@
     })
 
     containerB.addEventListener('drop', (event) => {
+        if (dragSrcContainer === 'B') {
+            return
+        }
         event.preventDefault()
 
-        // containerB.appendChild(dragSrcEl)
         const placeholder = containerB.querySelector('.placeholder')
         containerB.insertBefore(dragSrcEl, placeholder)
         containerB.classList.remove('active')
@@ -161,6 +163,9 @@
         return false
     })
     containerA.addEventListener('drop', (event) => {
+        if (dragSrcContainer === 'A') {
+            return
+        }
         event.preventDefault()
 
         const placeholder = containerA.querySelector('.placeholder')
