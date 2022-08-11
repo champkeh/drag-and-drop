@@ -7,6 +7,7 @@
         body {
             display: flex;
             justify-content: center;
+            align-items: flex-start;
             margin: 50px auto;
             gap: 30px;
             background-color: gainsboro;
@@ -41,6 +42,7 @@
             opacity: 0.4;
             min-height: 44px;
             box-sizing: border-box;
+            transition: border .2s;
         }
 
         .box {
@@ -52,64 +54,44 @@
             min-height: 44px;
             box-sizing: border-box;
         }
-        .box.over {
-            border: 3px dashed #666666;
-        }
     </style>
 </head>
 <body>
 <div class="container" id="containerA">
-    <div draggable="true" class="box">A</div>
-    <div draggable="true" class="box">B</div>
-    <div draggable="true" class="box">C</div>
-    <div draggable="true" class="box">D</div>
-    <div draggable="true" class="box">E</div>
+    <div draggable="true" class="box">苹果</div>
+    <div draggable="true" class="box">西红柿</div>
+    <div draggable="true" class="box">柑橘</div>
+    <div draggable="true" class="box">李子</div>
+    <div draggable="true" class="box">白菜</div>
+    <div class="placeholder"></div>
 </div>
 <div class="container" id="containerB">
-    <div draggable="true" class="box">C</div>
-    <div draggable="true" class="box">D</div>
-    <div draggable="true" class="box">E</div>
+    <div draggable="true" class="box">萝卜</div>
+    <div draggable="true" class="box">香蕉</div>
+    <div draggable="true" class="box">菠萝</div>
     <div class="placeholder"></div>
 </div>
 <script>
     let dragSrcEl
+    let dragSrcContainer
     function handleDragStart(event) {
         this.style.opacity = '0.4'
 
         dragSrcEl = this
+        dragSrcContainer = this.parentElement === containerA ? 'A' : 'B'
 
         event.dataTransfer.effectAllowed = 'move'
         event.dataTransfer.setData('text/plain', this.innerHTML)
     }
-    function handleDragEnd(e) {
+    function handleDragEnd(event) {
         this.style.opacity = '1'
 
-        // items.forEach(item => {
-        //     item.classList.remove('over')
-        // })
+        containerA.classList.remove('active')
+        containerA.classList.remove('droppable')
         containerB.classList.remove('active')
         containerB.classList.remove('droppable')
     }
-    function handleDragOver(e) {
-        e.preventDefault()
-        return false
-    }
-    function handleDragEnter(e) {
-        // this.classList.add('over')
-    }
-    function handleDragLeave(e) {
-        // this.classList.remove('over')
-    }
-    function handleDrop(e) {
-        e.stopPropagation()
 
-        if (dragSrcEl !== this) {
-            dragSrcEl.innerHTML = this.innerHTML
-            this.innerHTML = e.dataTransfer.getData('text/html')
-        }
-
-        return false
-    }
 
     const containerA = document.querySelector('#containerA')
     const containerB = document.querySelector('#containerB')
@@ -117,43 +99,74 @@
     let items = document.querySelectorAll('[draggable="true"]')
     items.forEach(item => {
         item.addEventListener('dragstart', handleDragStart)
+        item.addEventListener('dragend', handleDragEnd)
         // item.addEventListener('dragover', handleDragOver)
         // item.addEventListener('dragenter', handleDragEnter)
         // item.addEventListener('dragleave', handleDragLeave)
-        item.addEventListener('dragend', handleDragEnd)
         // item.addEventListener('drop', handleDrop)
     })
     containerA.addEventListener('dragstart', (event) => {
-        containerA.classList.add('active')
-        containerA.classList.add('droppable')
         containerB.classList.add('droppable')
     })
-    containerA.addEventListener('dragend', (event) => {
-        event.stopPropagation()
-        document.querySelector('#containerB').classList.remove('droppable')
+    containerB.addEventListener('dragstart', () => {
+        containerA.classList.add('droppable')
     })
 
-    containerB.addEventListener('dragenter', (event) => {
-        containerB.classList.add('active')
-    })
-    containerB.addEventListener('dragleave', (event) => {
-        event.target.classList.remove('active')
-    })
+
+    let bOver = false
     containerB.addEventListener('dragover', (event) => {
         event.preventDefault()
+
+        bOver = true
+        if (dragSrcContainer === 'A') {
+            containerB.classList.add('active')
+        }
     })
+    containerB.addEventListener('dragleave', (event) => {
+        bOver = false
+        setTimeout(() => {
+            if (!bOver) {
+                event.target.classList.remove('active')
+            }
+        }, 50)
+    })
+
+    let aOver = false
+    containerA.addEventListener('dragover', (event) => {
+        event.preventDefault()
+
+        aOver = true
+        if (dragSrcContainer === 'B') {
+            containerA.classList.add('active')
+        }
+    })
+    containerA.addEventListener('dragleave', (event) => {
+        aOver = false
+        setTimeout(() => {
+            if (!aOver) {
+                event.target.classList.remove('active')
+            }
+        }, 50)
+    })
+
     containerB.addEventListener('drop', (event) => {
         event.preventDefault()
 
-        // const innerHTML = event.dataTransfer.getData('text/plain')
-        // console.log(innerHTML)
-        // const div = document.createElement('div')
-        // div.classList.add('box')
-        // div.draggable = true
-        // div.innerHTML = innerHTML
-        containerB.appendChild(dragSrcEl)
+        // containerB.appendChild(dragSrcEl)
         const placeholder = containerB.querySelector('.placeholder')
         containerB.insertBefore(dragSrcEl, placeholder)
+        containerB.classList.remove('active')
+        containerB.classList.remove('droppable')
+
+        return false
+    })
+    containerA.addEventListener('drop', (event) => {
+        event.preventDefault()
+
+        const placeholder = containerA.querySelector('.placeholder')
+        containerA.insertBefore(dragSrcEl, placeholder)
+        containerA.classList.remove('active')
+        containerA.classList.remove('droppable')
 
         return false
     })
