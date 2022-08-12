@@ -29,24 +29,26 @@
         }
 
         .container.droppable .placeholder {
-            display: block;
+            visibility: visible;
+            opacity: 0.8;
+            height: 44px;
         }
 
         .container.active .placeholder {
-            opacity: 1;
             border: 1px solid #bcc4e2;
             background-color: #eceff8;
+            opacity: 1;
         }
 
         .placeholder {
-            display: none;
+            visibility: hidden;
+            opacity: 0;
+            height: 0;
             border: 1px solid #cfcfcf;
-            background-color: #ddd;
+            background-color: #f1f1f1;
             border-radius: .5em;
-            opacity: 0.4;
-            min-height: 44px;
             box-sizing: border-box;
-            transition: height .5s;
+            transition: visibility 0s, opacity .5s, height .1s, border .3s, background-color .3s;
         }
 
         .item {
@@ -100,6 +102,9 @@
             background-color: blue;
         }
 
+        .draggable--is-dragging {
+            cursor: move;
+        }
         .draggable--is-dragging .item:hover::after {
             display: none;
         }
@@ -150,8 +155,10 @@
         if (targetContainer && targetContainer !== evt.data.sourceContainer) {
             // 移动元素
             const placeholder = targetContainer.querySelector('.placeholder')
+            placeholder.style.display = 'none'
             setTimeout(() => {
                 targetContainer.insertBefore(sourceElement, placeholder)
+                placeholder.style.display = 'block'
             }, 0)
         }
     })
