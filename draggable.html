@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Draggable</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            margin: 50px auto;
+            gap: 30px;
+            background-color: #f1f1f1;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 300px;
+            padding: 0 30px 30px;
+            border-radius: 10px;
+            background-color: white;
+            transition: all .5s;
+        }
+
+        .container.hover {
+            box-shadow: 0 0 20px 0 rgba(207, 207, 207, 1);
+        }
+
+        .container.droppable .placeholder {
+            display: block;
+        }
+
+        .container.active .placeholder {
+            opacity: 1;
+            border: 1px solid #bcc4e2;
+            background-color: #eceff8;
+        }
+
+        .placeholder {
+            display: none;
+            border: 1px solid #cfcfcf;
+            background-color: #ddd;
+            border-radius: .5em;
+            opacity: 0.4;
+            min-height: 44px;
+            box-sizing: border-box;
+            transition: height .5s;
+        }
+
+        .item {
+            position: relative;
+            border: 1px solid #e9e9e9;
+            border-radius: 5px;
+            padding: 10px;
+            cursor: move;
+            min-height: 44px;
+            box-sizing: border-box;
+        }
+
+        .item:hover {
+            border-color: #cfcfcf;
+        }
+
+        .draggable-source--is-dragging {
+            content-visibility: hidden;
+            background-color: #f1f1f1;
+        }
+        .container.active .draggable-source--is-dragging {
+            border: 1px solid #bcc4e2;
+            background-color: #eceff8;
+        }
+
+        .draggable-mirror {
+            width: 300px;
+            box-sizing: border-box;
+            background-color: white;
+            opacity: 0.8;
+        }
+
+        .draggable-container--over .placeholder {
+            /*display: block;*/
+        }
+
+        .draggable-container--is-dragging.draggable-container--over .placeholder {
+            /*display: none;*/
+        }
+
+        .item:hover::after, .draggable-mirror::after {
+            position: absolute;
+            z-index: 10;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            content: "";
+            display: block;
+            width: 30px;
+            height: 30px;
+            background-color: blue;
+        }
+
+        .draggable--is-dragging .item:hover::after {
+            display: none;
+        }
+        .draggable--is-dragging .item:hover {
+            border-color: #e9e9e9;
+        }
+    </style>
+</head>
+<body>
+<div class="container" id="containerA">
+    <h3>水果</h3>
+    <div class="item">苹果</div>
+    <div class="item">西红柿</div>
+    <div class="item">柑橘</div>
+    <div class="item">李子</div>
+    <div class="item">白菜</div>
+    <div class="placeholder"></div>
+</div>
+<div class="container" id="containerB">
+    <h3>蔬菜</h3>
+    <div class="item">萝卜</div>
+    <div class="item">香蕉</div>
+    <div class="item">菠萝</div>
+    <div class="placeholder"></div>
+</div>
+
+<script type="module">
+    import Draggable from 'https://esm.sh/@shopify/draggable@next'
+
+    const draggable = new Draggable.Draggable(document.querySelectorAll('.container'), {
+        draggable: '.item',
+    })
+
+    let sourceElement
+    let targetContainer
+    draggable.on('drag:start', (evt) => {
+        console.log(evt)
+        getOtherContainers(evt.sourceContainer).forEach(el => el.classList.add('hover'))
+        evt.sourceContainer.classList.add('active')
+        evt.sourceContainer.style.zIndex = '10'
+        sourceElement = evt.data.originalSource
+    })
+    draggable.on('drag:stop', (evt) => {
+        console.log(evt)
+        getOtherContainers(evt.sourceContainer).forEach(el => el.classList.remove('hover', 'droppable', 'active'))
+        evt.sourceContainer.style.zIndex = '0'
+
+        if (targetContainer && targetContainer !== evt.data.sourceContainer) {
+            // 移动元素
+            const placeholder = targetContainer.querySelector('.placeholder')
+            setTimeout(() => {
+                targetContainer.insertBefore(sourceElement, placeholder)
+            }, 0)
+        }
+    })
+
+    draggable.on('drag:over:container', evt => {
+        if (evt.sourceContainer !== evt.overContainer) {
+            evt.overContainer.classList.add('active')
+            evt.sourceContainer.classList.remove('active')
+        } else {
+            getOtherContainers(evt.sourceContainer).forEach(el => el.classList.remove('droppable'))
+        }
+        targetContainer = evt.data.overContainer
+    })
+    draggable.on('drag:out:container', evt => {
+        evt.sourceContainer.classList.add('active')
+        if (evt.sourceContainer === evt.overContainer) {
+            // 离开源容器
+            getOtherContainers(evt.sourceContainer).forEach(el => el.classList.add('droppable'))
+        } else {
+            evt.overContainer.classList.remove('active')
+        }
+        targetContainer = null
+    })
+
+
+
+    function getOtherContainers(sourceContainer) {
+        return [...document.querySelectorAll('.container')].filter(container => container !== sourceContainer)
+    }
+
+
+</script>
+</body>
+</html>
